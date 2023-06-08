@@ -1,8 +1,8 @@
-from pathlib import Path
-
 # config/settings.py
 # django-debug-toolbar
 import socket
+from pathlib import Path
+
 hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
 
