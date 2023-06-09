@@ -1,0 +1,16 @@
+{% extends '_base.html' %}
+{% block title %}{{ user.firstName }} {{ user.lastName }}{% endblock %}
+{% block content %}
+    <div class="page-header flex flex-center text-center">
+        <h1>{{ user.firstName }} {{ user.lastName }}</h1>
+        <h3>Address:</h3>
+        <p>{{ user.address.address }}</p>
+        <p>{{ user.address.city }}, {{ user.address.state }} {{ user.address.postalCode }}</p>
+        <h3>Phone:</h3>
+        <p>{{ user.phone }}</p>
+        <h3>Email:</h3>
+        <p>
+            <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+        </p>
+    </div>
+{% endblock content %}

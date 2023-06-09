@@ -20,6 +20,11 @@ RUN set -ex && \
 # Copy local project
 COPY . /code/
 
+RUN python /code/manage.py collectstatic 
+
+RUN python /code/manage.py makemigrations && \
+    python /code/manage.py migrate
+
 # Expose port 8000
 EXPOSE 8000
 
