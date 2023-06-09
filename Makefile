@@ -66,7 +66,7 @@ run: ## Run django app
 
 test: ## Run tests for django app
 	@echo "Running tests"
-	@docker-compose run --rm web pytest --ds=django_project.settings
+	@docker-compose run --rm test pytest --ds=django_project.settings
 
 django-shell: ## Run django-shell
 	@echo "Running shell"
