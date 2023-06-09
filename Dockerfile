@@ -1,5 +1,5 @@
 # Pull base image
-FROM python:3.11-slim-buster
+FROM python:3.11-slim-buster as base
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -10,12 +10,11 @@ RUN mkdir -p /code
 WORKDIR /code
 
 # Install dependencies
-COPY requirements.txt /tmp/requirements.txt
+COPY Pipfile /code/Pipfile
+COPY Pipfile.lock /code/Pipfile.lock
 
-RUN set -ex && \
-    pip install --upgrade pip && \
-    pip install -r /tmp/requirements.txt && \
-    rm -rf /root/.cache/
+RUN pip install --no-cache-dir --upgrade pip pipenv
+RUN pipenv sync --system
 
 # Copy local project
 COPY . /code/
@@ -24,6 +23,13 @@ RUN python /code/manage.py collectstatic
 
 RUN python /code/manage.py makemigrations && \
     python /code/manage.py migrate
+
+FROM base as test
+
+# Run tests
+RUN pipenv sync --dev --system
+
+FROM base as production
 
 # Expose port 8000
 EXPOSE 8000

@@ -20,9 +20,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: test
     entrypoint: /bin/bash
     volumes:
       - .:/code
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    volumes:
+      - .:/code
+    depends_on:
+      - db
 
 volumes:
   postgres_data:

@@ -27,6 +27,9 @@ TARGET_COLOR := $(BLUE)
 
 POUND = \#
 
+DC := docker-compose
+TEST := $(DC) run --rm test
+WEB := $(DC) run --rm web
 
 .DEFAULT_GOAL := help
 
@@ -83,8 +86,8 @@ build-no-cache: ## Build docker images without cache
 
 format: ## Format code with black
 	@echo "Formatting code"
-	@docker-compose run --rm web yapf -r -i . && docker-compose run --rm web isort .
+	@docker-compose run --rm test yapf -r -i . && docker-compose run --rm test isort .
 
 lint: ## Lint code with flake8
 	@echo "Linting code"
-	@docker-compose run --rm web flake8 .  --max-line-length=120 --exclude=migrations && docker-compose run --rm web pylint .
+	@docker-compose run --rm test flake8 .  --max-line-length=120 --exclude=migrations && docker-compose run --rm test pylint .
