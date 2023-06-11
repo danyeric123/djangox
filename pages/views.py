@@ -19,18 +19,33 @@ class UserListView(TemplateView):
     context_object_name = "users"
 
     async def get(self, request, *args, **kwargs):
-        await asyncio.sleep(2)
+        start = time.time()
         context = super().get_context_data(**kwargs)
         async with httpx.AsyncClient() as client:
-            response = await client.get("https://dummyjson.com/users")
-            context["users"] = response.json()["users"]
-
+            response = await asyncio.gather(
+                client.get("https://dummyjson.com/users"),
+                client.get("https://dummyjson.com/quotes"))
+            users = response[0].json()["users"]
+            quotes = response[1].json()["quotes"]
+            for user, quote in zip(users, quotes):
+                user["quote"] = quote
+            context["users"] = users
+        total = time.time() - start
+        context["time_taken"] = total
+        print(f"Time taken: {total}")
         return self.render_to_response(context)
 
     # def get(self, request, *args, **kwargs):
-    #     time.sleep(2)
+    #     start = time.time()
     #     context = super().get_context_data(**kwargs)
-    #     context["users"] = requests.get("https://dummyjson.com/users").json()["users"]
+    #     users = requests.get("https://dummyjson.com/users").json()["users"]
+    #     quotes = requests.get("https://dummyjson.com/quotes").json()["quotes"]
+    #     for user, quote in zip(users, quotes):
+    #         user["quote"] = quote
+    #     context["users"] = users
+    #     total = time.time() - start
+    #     context["time_taken"] = total
+    #     print(f"Time taken: {total}")
     #     return self.render_to_response(context)
 
 
@@ -38,18 +53,22 @@ class UserDetailView(TemplateView):
     template_name = "pages/user_detail.html"
     context_object_name = "user"
 
-    async def get(self, request, *args, **kwargs):
-        await asyncio.sleep(2)
-        context = super().get_context_data(**kwargs)
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"https://dummyjson.com/user/{kwargs['pk']}")
-            context["user"] = response.json()
-
-        return self.render_to_response(context)
-
-    # def get(self, request, *args, **kwargs):
-    #     time.sleep(2)
+    # async def get(self, request, *args, **kwargs):
+    #     start = time.time()
+    #     await asyncio.sleep(2)
     #     context = super().get_context_data(**kwargs)
-    #     context["user"] = requests.get(f"https://dummyjson.com/user/{kwargs['pk']}").json()
+    #     async with httpx.AsyncClient() as client:
+    #         response = await client.get(
+    #             f"https://dummyjson.com/user/{kwargs['pk']}")
+    #         context["user"] = response.json()
+    #     print(f"Time taken: {time.time() - start}")
     #     return self.render_to_response(context)
+
+    def get(self, request, *args, **kwargs):
+        start = time.time()
+        time.sleep(2)
+        context = super().get_context_data(**kwargs)
+        context["user"] = requests.get(
+            f"https://dummyjson.com/user/{kwargs['pk']}").json()
+        print(f"Time taken: {time.time() - start}")
+        return self.render_to_response(context)

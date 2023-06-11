@@ -54,31 +54,31 @@ help:
 
 createsuperuser: ## Create superuser for django admin panel
 	@echo "Creating superuser"
-	@docker-compose run --rm web python manage.py createsuperuser
+	@${WEB} python manage.py createsuperuser
 
 migrate: ## Migrate database for django app
 	@echo "Migrating database"
-	@docker-compose run --rm web python manage.py makemigrations && docker-compose run --rm web python manage.py migrate
+	@${WEB} python manage.py makemigrations && ${WEB} python manage.py migrate
 
 run: ## Run django app
 	@echo "Running django app"
-	@docker-compose up
+	@${DC} up
 
 test: ## Run tests for django app
 	@echo "Running tests"
-	@docker-compose run --rm test pytest --ds=django_project.settings
+	@${TEST} pytest --ds=django_project.settings
 
 django-shell: ## Run django-shell
 	@echo "Running shell"
-	@docker-compose run --rm web python manage.py shell
+	@${WEB} python manage.py shell
 
 shell: ## Run shell
 	@echo "Running shell"
-	@docker-compose run shell
+	@${DC} run shell
 
 build: ## Build docker images
 	@echo "Building docker images"
-	@docker-compose build
+	@${DC} build
 
 build-no-cache: ## Build docker images without cache
 	@echo "Building docker images without cache"
@@ -86,8 +86,8 @@ build-no-cache: ## Build docker images without cache
 
 format: ## Format code with black
 	@echo "Formatting code"
-	@docker-compose run --rm test yapf -r -i . && docker-compose run --rm test isort .
+	@${TEST} yapf -r -i . && ${TEST} isort . && ${TEST} djlint . --reformat
 
 lint: ## Lint code with flake8
 	@echo "Linting code"
-	@docker-compose run --rm test flake8 .  --max-line-length=120 --exclude=migrations && docker-compose run --rm test pylint .
+	@${TEST} flake8 .  --max-line-length=120 --exclude=migrations && ${TEST} pylint .
